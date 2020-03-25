@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { withRouter } from "react-router-dom";
 
 class ToolBox extends React.Component {
   state = {
@@ -19,6 +21,14 @@ class ToolBox extends React.Component {
       searchText: ""
     });
     this.props.search("");
+  };
+
+  goCart = () => {
+    if (!global.auth.isLogin()) {
+      this.props.history.push("/login");
+      toast.info("請先進行登入 !");
+    }
+    this.props.history.push("/cart");
   };
 
   render() {
@@ -43,7 +53,7 @@ class ToolBox extends React.Component {
             </div>
           </div>
         </div>
-        <Link to="/cart" className="cart-box">
+        <Link to="/cart" className="cart-box" onClick={this.goCart}>
           <i class="fas fa-shopping-cart"></i>
           <span className="cart-num">({this.props.cartNum})</span>
         </Link>
@@ -53,4 +63,4 @@ class ToolBox extends React.Component {
   // eslint-disable-next-line no-unused-expressions
 }
 
-export default ToolBox;
+export default withRouter(ToolBox);

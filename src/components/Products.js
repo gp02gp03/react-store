@@ -127,6 +127,15 @@ class Products extends React.Component {
     return cartNum || 0;
   };
 
+  initCartNum = async () => {
+    const user = global.auth.getUser() || {};
+    const res = await axios.get(`/carts`, { params: { userId: user.email } });
+    const carts = res.data || [];
+    const cartNum = carts
+      .map(c => c.mount)
+      .reduce((accumulator, value) => accumulator + value, 0);
+    return cartNum || 0;
+  };
   render() {
     return (
       <div>
@@ -168,9 +177,12 @@ class Products extends React.Component {
               <Product />
     </div>*/}
           </div>
-          <button className="button is-primary add-btn" onClick={this.toAdd}>
-            add
-          </button>
+
+          {(global.auth.getUser() || {}).type === 1 && (
+            <button className="button is-primary add-btn" onClick={this.toAdd}>
+              add
+            </button>
+          )}
         </div>
       </div>
     );

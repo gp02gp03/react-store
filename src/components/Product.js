@@ -3,7 +3,7 @@ import axios from "../commons/axios";
 import { toast } from "react-toastify";
 import Panel from "components/Panel";
 import EditInventory from "components/EditInventory";
-
+import { withRouter } from "react-router-dom";
 class Product extends React.Component {
   toEdit = () => {
     Panel.open({
@@ -21,7 +21,14 @@ class Product extends React.Component {
   };
 
   addCart = async () => {
+    if (!global.auth.isLogin()) {
+      this.props.history.push("/login");
+      toast.info("請先進行登入 !");
+      return;
+    }
+
     try {
+      const user = global.auth.getUser() || {};
       const { id, name, image, price } = this.props.product;
       const res = await axios.get("/carts", { params: { productId: id } });
       const carts = res.data;
@@ -30,7 +37,14 @@ class Product extends React.Component {
         cart.mount += 1;
         await axios.put(`/carts/${cart.id}`, cart);
       } else {
-        const cart = { productId: id, name, image, price, mount: 1 };
+        const cart = {
+          productId: id,
+          name,
+          image,
+          price,
+          mount: 1,
+          userId: user.email
+        };
         await axios.post("/carts", cart);
       }
       this.props.updateCartNum();
@@ -38,6 +52,19 @@ class Product extends React.Component {
       toast.success("Add	Cart	Success");
     } catch (error) {
       toast.error("Add	Cart	Failed");
+    }
+  };
+
+  rederManageBtn = () => {
+    const user = global.auth.getUser() || {};
+    if (user.type === 1) {
+      return (
+        <div className="p-head has-text-right" onClick={this.toEdit}>
+          <span className="icon edit-btn">
+            <i className="fas fa-sliders-h"></i>
+          </span>
+        </div>
+      );
     }
   };
 
@@ -51,11 +78,7 @@ class Product extends React.Component {
     return (
       <div className={_pClass[status]}>
         <div className="p-content">
-          <div className="p-head has-text-right" onClick={this.toEdit}>
-            <span className="icon edit-btn">
-              <i className="fas fa-sliders-h"></i>
-            </span>
-          </div>
+          {this.rederManageBtn()}
           <div className="img-wrapper">
             <div className="out-stock-text">Out of Stock</div>
             <figure class="image is-4by3">
@@ -82,4 +105,4 @@ class Product extends React.Component {
   // eslint-disable-next-line no-unused-expressions
 }
 
-export default Product;
+export default withRouter(Product);

@@ -5,6 +5,7 @@ import App from "pages/App.js";
 import Login from "pages/Login.js";
 import NotFound from "pages/NotFound.js";
 import Cart from "pages/Cart";
+import Register from "pages/Register";
 
 class Router extends React.Component {
   render() {
@@ -15,6 +16,8 @@ class Router extends React.Component {
             <Route path="/" exact component={App} />
             <Route path="/login" component={Login} />
             <Route path="/cart" component={Cart} />
+            <Route path="/register" component={Register} />
+
             <Route component={NotFound} />
           </Switch>
         </BrowserRouter>

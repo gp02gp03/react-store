@@ -4,10 +4,11 @@ import CartItem from "components/CartItem";
 import axios from "../commons/axios";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
-const Cart = () => {
+const Cart = (props) => {
   const [carts, setCarts] = useState([]);
   useEffect(() => {
-    axios.get("/carts").then(res => {
+    const user = global.auth.getUser() || {};
+    axios.get(`/carts?userId=${user.email}`).then(res => {
       setCarts(res.data);
     });
   }, []);
